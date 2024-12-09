@@ -167,28 +167,24 @@ initialize(){
 		exit "$FILE_WRITE_ERROR"
 	fi
 
-	printf "DONE.
+	echo "Creating a new section: [polsect] for Policy Section..."
+	echo "This is used for the policy qualifier."
+	printf "\n[ ecdsa_polsect ]
+	policyIdentifier = 1.3.6.1.5.5.7.3.1	# for serverAuth
+	userNotice.1 = @notice
 
-Setting up policy qualifiers for the CA.
-These qualifiers are chosen to fit this need and usage... "
-	sed -i "/issuerAltName=issuer:copy/a\certificatePolicies = ia5org, 1.2.3.4, 1.5.6.7.8, @polsect" \
-	openssl.cnf || exit 1
-
-	printf "DONE.
-
-Creating a new section: [polsect] for Policy Section...
-This is used for the policy qualifier.\n"
-
-	printf "
-[polsect]
-	policyIdentifier = 1.3.5.8
+	[ ecdsa_polsect ]
+	policyIdentifier = 1.3.6.1.5.5.7.3.1	# for serverAuth too... Couldn't find any better
 	userNotice.1 = @notice
 
 	[notice]
 	explicitText = 'This CA policy covers the following requirements: Common Name is required, other fields are optional. All certificates must comply with the CA\'s operational standards and policies.'
 	organization = 'Alboutica'
-	noticeNumbers = 1, 2, 3, 4
-	" >> openssl.cnf || exit 1
+	noticeNumbers = 1	# I only have one security policy anyway.\n" >> openssl.cnf || exit 1
+
+#@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+####Refer to the policy from the extensions####
+#@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 
 	printf "DONE.
 Adding a new section: [ v3_server_kex ] for the server key exchange, this is 
