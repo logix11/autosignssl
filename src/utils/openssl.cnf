@@ -1,0 +1,62 @@
+[ ca ] # How the 'ca' command will act when utilized to sign certs
+	default_ca		= ca_default # The name of the default CA section
+
+[ ca_default ] # defining the default CA section
+	dir				= /var/ca		# Default root directory
+	certs			= $dir/certsdb	# Default certificates directory
+	new_certs_dir	= $certs		# Default new certificates directory
+	database		= $dir/index.txt	# Database of certificates
+	certificate		= $dir/cacert.pem	# The default CA's certificate
+	private_key		= $dir/private/cakey.pem	# the default CA's private key
+	serial			= $dir/serial		# A database of serials.
+	crldir			= $dir/crl			# Default CRL directory 
+	crlnumber		= $dir/crlnumber	# CRL serial
+	crl				= $crldir/crl.pem	# CRL file.
+	RANDFILE		= $dir/private/.rand	# File of random data, need to set up the script to fill it from the /dev/urandom
+	name_opt        = ca_default # How the name is displayed to you for confirmation
+	cert_opt        = ca_default # How the certificate is displayed to you for confirmation
+	default_days    = 90
+	default_crl_days= 30
+	default_md      = sha256
+	preserve        = no		# Do not allow people to determine the order of their DN.
+	policy          = policy_match # Strict policy
+
+[ policy_match ]
+	countryName             = match
+	stateOrProvinceName     = match
+	localityName            = match	# Locality name (e.g., city)
+	organizationName        = match	
+	organizationalUnitName  = optional
+	commonName              = supplied
+	emailAddress            = optional
+
+[ policy_anything ]
+	countryName             = optional
+	stateOrProvinceName     = optional
+	localityName            = optional
+	organizationName        = optional
+	organizationalUnitName  = optional
+	commonName              = supplied
+	emailAddress            = optional
+
+[ req ]	# a section for the req command
+	default_bits            = 3072
+	default_keyfile         = $dir/privkey.pem
+	distinguished_name      = req_distinguished_name # referencing a section
+	attributes              = req_attributes  # referencing a section
+	x509_extensions			= v3_ca # referencing a section
+	req_extensions			= v3_req # referencing a section
+	string_mask = utf8only
+
+[ req_distinguished_name ]
+	countryName                     = Country Name (2 letter code)
+	countryName_default             = DZ
+	countryName_min                 = 2
+	countryName_max                 = 2
+
+	stateOrProvinceName             = State or Province Name (full name)
+	stateOrProvinceName_default     = Algiers
+
+	localityName                    = Locality Name (eg, city)
+	localityName_default            = Hussein Dey
+	 
