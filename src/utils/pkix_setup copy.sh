@@ -43,198 +43,161 @@ initialize(){
 		exit "$CP_ERROR"
 	fi
 
-	printf "Setting default directory..."
-	if sed -i "/Where everything is kept/c\\dir = $(pwd) # Where everything is kept" \
-		openssl.cnf 
-	then
-		echo DONE
-	else
-		echo ERROR: could not edit on openssl.cnf, exiting...
-		exit "$FILE_WRITE_ERROR"
-	fi
-
-	printf "\nMaking subjects unique..."
-	if sed -i "/#unique_subject/c\\unique_subject = yes # Set to 'no' to allow creation of" \
-		openssl.cnf 
-	then
-		echo DONE
-	else
-		echo ERROR: could not edit on openssl.cnf, exiting...
-		exit "$FILE_WRITE_ERROR"
-	fi
-
-	printf "\nSetting default extensions..."
-	if sed -i "/x509_extensions/c\\x509_extensions = v3_server" openssl.cnf
-	then
-		echo DONE.
-	else
-		echo ERROR: could not edit on openssl.cnf, exiting...
-		exit "$FILE_WRITE_ERROR"
-	fi
-
-	printf "\nSetting default days..."
-	if sed -i "/default_days/c\\default_days = 90 # how long to certify for. 90 is recommended by Mozill"
-		openssl.cnf || exit 1
-	then
-		echo DONE.
-	else
-		echo ERROR: could not edit on openssl.cnf, exiting...
-		exit "$FILE_WRITE_ERROR"
-	fi
-
-	printf "\nSetting default hash function..."
-	if sed -i "/default_md/c\\default_md = sha512 # use public key SHA2-512." \
-		openssl.cnf
-	then
-		echo DONE.
-	else
-		echo ERROR: could not edit on openssl.cnf, exiting...
-		exit "$FILE_WRITE_ERROR"
-	fi
+	echo "We've copied openssl.cnf for no reason other than preserving the configuration file's attributes."
+	echo "We'll overwrite it now. We need your privileges. But before that, let's learn more about you!"
+	echo "Postscriptum: this knowledge will be used in nothing other than setting your OpenSSL configuration :)"
 	
-	printf "\nSetting default country name."
 	read -rp "What's your country's two character code? :: " country
-	if sed -i "/countryName_default/c\\countryName_default = $country" \
-		openssl.cnf
-	then
-		echo DONE.
-	else
-		echo ERROR: could not edit on openssl.cnf, exiting...
-		exit "$FILE_WRITE_ERROR"
-	fi
 
-	printf "\nSetting default state name."
+	read -rp "What's your state or province's name? :: " state
 
-	read -rp "What's your state's name? :: " state
-	if sed -i "/stateOrProvinceName_default/c\\stateOrProvinceName_default = $state" \
-		openssl.cnf
-	then
-		echo DONE.
-	else
-		echo ERROR: could not edit on openssl.cnf, exiting...
-		exit "$FILE_WRITE_ERROR"
-	fi
-	printf "\nSetting default organization name."
+	read -rp "What's your locality (e.g., city) name? :: " locality
+	
 	read -rp "What's your organization's name? :: " org
-	if sed -i "/0.organizationName_default/c\\0.organizationName_default = $org" \
-		openssl.cnf
-	then
-		echo DONE.
-	else
-		echo ERROR: could not edit on openssl.cnf, exiting...
-		exit "$FILE_WRITE_ERROR"
-	fi
-	printf "Setting default password length... "
+
+	sudo echo "[ ca ] # How the 'ca' command will act when utilized to sign certs
+	default_ca		= ca_default # The name of the default CA section
+
+[ ca_default ] # defining the default CA section
+	dir				= /var/ca		# Default root directory
+	certs			= \$dir/certsdb	# Default certificates directory
+	new_certs_dir	= \$certs		# Default new certificates directory
+	database		= \$dir/index.txt	# Database of certificates
+	certificate		= \$dir/cacert.pem	# The default CA's certificate
+	private_key		= \$dir/private/cakey.pem	# the default CA's private key
+	serial			= \$dir/serial		# A database of serials.
+	crldir			= \$dir/crl			# Default CRL directory 
+	crlnumber		= \$dir/crlnumber	# CRL serial
+	crl				= \$crldir/crl.pem	# CRL file.
+	RANDFILE		= \$dir/private/.rand	# File of random data, need to set up the script to fill it from the /dev/urandom
+	name_opt		= ca_default # How the name is displayed to you for confirmation
+	cert_opt		= ca_default # How the certificate is displayed to you for confirmation
+	default_days	= 90
+	default_crl_days= 30
+	default_md		= sha256
+	preserve		= no		# Do not allow people to determine the order of their DN.
+	policy			= policy_match # Strict policy
+
+[ policy_match ]
+	countryName			= match
+	stateOrProvinceName	= match
+	localityName		= match	# Locality name (e.g., city)
+	organizationName	= match	
+	organizationalUnitName = optional
+	commonName			= supplied
+	emailAddress		= optional
+
+[ policy_anything ]
+	countryName				= optional
+	stateOrProvinceName		= optional
+	localityName			= optional
+	organizationName		= optional
+	organizationalUnitName	= optional
+	commonName				= supplied
+	emailAddress			= optional
+
+[ req ]	# a section for the req command
+	default_bits			= 3072
+	default_keyfile			= \dir/privkey.pem
+	distinguished_name		= req_distinguished_name # referencing a section
+	attributes				= req_attributes  # referencing a section
+	x509_extensions			= v3_ca # referencing a section
+	req_extensions			= v3_req # referencing a section
+	string_mask 			= utf8only
+
+[ req_distinguished_name ]
+	countryName				= Country Name (2 letter code)
+	countryName_default		= $country
+	countryName_min			= 2
+	countryName_max			= 2
+
+	stateOrProvinceName		= State or Province Name (full name)
+	stateOrProvinceName_default	= $state
+
+	localityName			= Locality Name (eg, city)
+	localityName_default	= $locality
+
+	0.organizationName			= Organization Name (eg, company)
+	0.organizationName_default	= $org	 
+
+	organizationalUnitName	= Organizational Unit Name (eg, section)
+
+	commonName		= Common Name (eg, YOUR name)
+	commonName_max	= 64
+
+	emailAddress    	= Email Address
+	emailAddress_max	= 64
+
+[ req_attributes ]
+	challengePassword			= A challenge password
+	challengePassword_min		= 8
+	challengePassword_max		= 20
 	
-	if sed -i "/challengePassword_min/c\\challengePassword_min = 10" openssl.cnf
-	then
-		echo DONE.
-	else
-		echo ERROR: could not edit on openssl.cnf, exiting...
-		exit "$FILE_WRITE_ERROR"
-	fi
+[ v3_req ]
 
-	echo "Setting correct keyUsage extension for the CA..."
-	echo "This extention will set the key usage to only be used to sign certificates and"
-	printf "certificate revocation lists"
-	if sed -i "/# keyUsage = cRLSign, keyCertSign/c\\keyUsage = cRLSign, keyCertSign, digitalSignature" \
-		openssl.cnf
-	then
-		echo DONE.
-	else
-		echo ERROR: could not edit on openssl.cnf, exiting...
-		exit "$FILE_WRITE_ERROR"
-	fi
+	basicConstraints= CA:FALSE
+	keyUsage		= digitalSignature, keyAgreement
+	subjectAltName	= email:move
 
-	echo "Setting default subjectAltName to email..."
-	echo "This is to facilitate identification and communication."
-	if sed -i "/# subjectAltName=email:copy/c\\subjectAltName=email:copy" \
-		openssl.cnf
-	then
-		echo DONE.
-	else
-		echo ERROR: could not edit on openssl.cnf, exiting...
-		exit "$FILE_WRITE_ERROR"
-	fi
+[ ecdsa_polsect ]
+	policyIdentifier 	= 1.3.6.1.5.5.7.3.1	# for serverAuth
+	userNotice.1 		= @notice
 
-	printf "Setting default issuerAltName to issuer's distinguished name... "
-	if sed -i "/issuerAltName=issuer:copy/c\\issuerAltName=issuer:copy" \
-		openssl.cnf 
-	then
-		echo DONE.
-	else
-		echo ERROR: could not edit on openssl.cnf, exiting...
-		exit "$FILE_WRITE_ERROR"
-	fi
+[ ecdsa_polsect ]
+	policyIdentifier	= 1.3.6.1.5.5.7.3.1	# for serverAuth too... Couldn't find any better
+	userNotice.1		= @notice
 
-	echo "Creating a new section: [polsect] for Policy Section..."
-	echo "This is used for the policy qualifier."
-	printf "\n[ ca_polsect ]
+[notice]
+	explicitText	= 'This CA policy covers the following requirements: Common Name is required, other fields are optional. All certificates must comply with the CA\'s operational standards and policies.'
+	organization	= 'Alboutica'
+	noticeNumbers	= 1	# I only have one security policy anyway.
+
+[ ca_polsect ]
 	policyIdentifier = 1.3.6.1.5.5.7.3.27	# for serverAuth
-	userNotice.1 = @notice
-	
-	\n[ ecdsa_polsect ]
-	policyIdentifier = 1.3.6.1.5.5.7.3.1	# for serverAuth
-	userNotice.1 = @notice
+	userNotice.1 	= @notice
 
-	\n[ ecdsa_polsect ]
-	policyIdentifier = 1.3.6.1.5.5.7.3.1	# for serverAuth too... Couldn't find any better
-	userNotice.1 = @notice
+[ v3_ca ]
+	subjectKeyIdentifier	= hash
+	authorityKeyIdentifier	= keyid:always,issuer:always
+	basicConstraints		= critical,CA:true
+	subjectAltName			= email:move
+	issuerAltName			= email:move
+	crlDistributionPoints 	= URI:https://crl.example-root-ca.com/crl.pem
+	keyUsage 				= cRLSign, keyCertSign, digitalSignature
+	subjectAltName			= email:copy
+	certificatePolicies 	= ia5org, @ca_polsect
 
-	\b[notice]
-	explicitText = 'This CA policy covers the following requirements: Common Name is required, other fields are optional. All certificates must comply with the CA\'s operational standards and policies.'
-	organization = 'Alboutica'
-	noticeNumbers = 1	# I only have one security policy anyway.\n" >> openssl.cnf || exit 1
+[ v3_server_kex ] # profile
+	basicConstraints		= CA:FALSE 
 
-#@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-####Refer to the policy from the extensions####
-#@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-
-	printf "DONE.
-Adding a new section: [ v3_server_kex ] for the server key exchange, this is 
-for the elliptic curve diffie-helmann (ECDH) key establishment.\n"
-	
-	echo "[ v3_server_kex ] # profile
-	# These extensions are added when CA signs a request.
-	# This goes against PKIX guidelines but some CAs do it and some software
-	# requires this to avoid interpreting an end user certificate as a CA.
-
-	basicConstraints        = cA:FALSE # the subject is not a certificate 
-									   # authority
-
-	# PKIX recommendations harmless if included in all certificates.
-	authorityKeyIdentifier  = keyid,issuer # I think this is the hash of the key
-	subjectKeyIdentifier    = hash
-	keyUsage                = keyAgreement, digitalSignature # used for key 
+	authorityKeyIdentifier	= keyid,issuer # the hash of the key
+	subjectKeyIdentifier	= hash			
+	keyUsage				= keyAgreement, digitalSignature # used for key 
 															 # establishment
-	# policyQualifiers        = @policy_qualifiers
-	# Import the email address.
-	subjectAltName          = email:copy
-	issuerAltName           = issuer:copy
-	#extendedKeyUsage        = serverAuth # An other usage of the key is to 
-										  # authenticate the server to the 
-										  # client. I have commented it because 
-										  # diffie-helmann is not used to 
-										  # authenticate but to establish keys.
-	" >> openssl.cnf || exit 1
-
-	echo "DONE.
-
-Adding a new section: [ v3_server_sig ] for server signature, i.e., elliptic 
-curve digital signature algorithm (ECDSA)."
-
-	echo "[ v3_server_sig ] # profile
-	basicConstraints		= cA:FALSE
+	subjectAltName	= email:move # moves the email from the DN to the SAN
+	issuerAltName	= issuer:move
+	extendedKeyUsage= serverAuth # An other usage of the key is to 
+		# authenticate the server to the client. I have commented it because 
+		# diffie-helmann is not used to authenticate but to establish keys.
+	
+[ v3_server_sig ] # profile
+	basicConstraints		= CA:FALSE
 	authorityKeyIdentifier	= keyid,issuer
 	subjectKeyIdentifier	= hash
 	keyUsage				= digitalSignature, keyEncipherment
-	#policyQualifiers		= @policy_qualifiers
-	subjectAltName			= email:copy
-	issuerAltName			= issuer:copy
-	extendedKeyUsage		= serverAuth" >> openssl.cnf || exit 1
+	subjectAltName			= email:move
+	issuerAltName			= issuer:move
+	extendedKeyUsage		= serverAuth" | sudo tee openssl.cnf
+##########################
+##########################
+##########################	
+##########################
+###	Continue From here ###
+##########################
+##########################
+##########################	
+##########################
 
-	echo "DONE
-Configuring OpenSSL: DONE."
 
 	echo "
 --------------------------------------------------------------------------------
