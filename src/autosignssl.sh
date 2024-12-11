@@ -8,6 +8,10 @@ CD_ERROR=4
 PERMS_ERROR=5
 FILE_WRITE_ERROR=6
 CP_ERROR=7
+UNKNOWN_ERROR=8
+
+# Importing files
+source "./utils/init_main_ca.sh"
 
 # main() {
 
@@ -27,7 +31,7 @@ You can do the following
 
 	[*] Create a local root CA;
 	[*] Generate keys;
-	[*]	Generate certificate signing requests (CSRs);
+	[*] Generate certificate signing requests (CSRs);
 	[*] Sign on certificates;
 	[*] Verify certificates;
 	[*] Revoke certificates
@@ -65,7 +69,7 @@ do
 		exit 0
 	elif [[ $choice == "1" ]]
 	then
-		init
+		main_init_ca
 	elif [[ $choice == "2" ]]
 	then
 		manage

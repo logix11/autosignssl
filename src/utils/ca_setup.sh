@@ -1,27 +1,28 @@
 #!/bin/bash
 
+# Importing files
+source "./utils/gen_root_ca_cert.sh"
+
 initialize(){
 	# Firstly, we need to create five directories to confront to X.509
 	echo "Creating directories..."
-	if mkdir -p pkix/"$1"/{certs,crl,csr,newcerts,private} 
-	then
+	if mkdir -p pkix/"$1"/{certs,crl,csr,newcerts,private} ; then
 		echo DONE.
 	else
 		echo ERROR: could not create the directories due to an unknown error, exiting...
 		exit "$DIR_INIT_ERROR"
 	fi
 
-	if cd "pkix/$1"
-	then
+	if cd "pkix/$1" ; then
 		echo "Moving to 'pkix/'... DONE"
 	else
 		echo "ERROR: could not move to 'pkix/', exiting..."
 		exit "$CD_ERROR"
 	fi
+	sleep .5
 
-	printf "Setting access controls to 'priate/'..."
-	if sudo chmod 700 private/ 
-	then
+	printf "Setting access controls to 'priate/'...\n"
+	if sudo chmod 700 private/ ; then
 		echo DONE
 	else
 		echo ERROR: could not set access controls, exiting...
@@ -29,14 +30,13 @@ initialize(){
 	fi
 	sleep .5
 
-	printf "\n--------------------------------------------------------------------------------"
+	printf "\n--------------------------------------------------------------------------------\n"
 
 	printf "\nCopying OpenSSL's configuration file..."
 
 	# Copying OpenSSL's configuration file, preserving some attributes
 	if sudo cp --preserve=mode,ownership,timestamps,context,xattr \
-		/etc/ssl/openssl.cnf ./openssl.cnf
-	then
+		/etc/ssl/openssl.cnf ./openssl.cnf ; then
 		echo DONE
 	else
 		echo ERROR: could not copy openssl.cnf configuration file, exiting...
@@ -59,7 +59,7 @@ initialize(){
 	default_ca		= ca_default # The name of the default CA section
 
 [ ca_default ] # defining the default CA section
-	dir				= /var/ca		# Default root directory
+	dir				= $(pwd)		# Default root directory
 	certs			= \$dir/certsdb	# Default certificates directory
 	new_certs_dir	= \$certs		# Default new certificates directory
 	database		= \$dir/index.txt	# Database of certificates
@@ -149,7 +149,7 @@ initialize(){
 
 [notice]
 	explicitText	= 'This CA policy covers the following requirements: Common Name is required, other fields are optional. All certificates must comply with the CA\'s operational standards and policies.'
-	organization	= 'Alboutica'
+	organization	= '$org'
 	noticeNumbers	= 1	# I only have one security policy anyway.
 
 [ ca_polsect ]
@@ -162,7 +162,6 @@ initialize(){
 	basicConstraints		= critical,CA:true
 	subjectAltName			= email:move
 	issuerAltName			= email:move
-	crlDistributionPoints 	= URI:https://crl.example-root-ca.com/crl.pem
 	keyUsage 				= cRLSign, keyCertSign, digitalSignature
 	subjectAltName			= email:copy
 	certificatePolicies 	= ia5org, @ca_polsect
@@ -188,183 +187,49 @@ initialize(){
 	subjectAltName			= email:move
 	issuerAltName			= issuer:move
 	extendedKeyUsage		= serverAuth" | sudo tee openssl.cnf
-##########################
-##########################
-##########################	
-##########################
-###	Continue From here ###
-##########################
-##########################
-##########################	
-##########################
 
+	sleep .5
 
-	echo "
---------------------------------------------------------------------------------
-	"
+	printf "\n--------------------------------------------------------------------------------\n"
 
 	printf "Creating DB index.txt..."
-	touch index.txt
-	echo "DONE."
-
-	echo "
---------------------------------------------------------------------------------
-	"
-	if [ ! -f serial ] ; then
-		printf "Creating serial and CRL serial..."
-		echo 00 > serial
-		echo 00 > crlnumber # If either of them exist, then the other does as 
-							# well. I can't imagine a setup with only a serial.
+	if touch index.txt ; then
 		echo "DONE."
+	else
+		echo ERROR: could not create index.txt, is it a permission error? Please create index.txt on your own.
 	fi
-	echo "
---------------------------------------------------------------------------------
-	"
+	sleep .5
+
+	printf "\n--------------------------------------------------------------------------------\n"
+
+	printf "Creating serial and CRL serial..."
+	if echo 00 > serial && echo 00 > crlnumber ; then						
+		echo "DONE."
+	else
+		echo "ERROR: could NOT create the certificate serial file and CRL serial file. Please do so, and put 00 in each one of them." 
+	fi
+	sleep .5
+
+	printf "\n--------------------------------------------------------------------------------\n"
 
 	echo "Evinronment creation: DONE."
 
-	echo "
---------------------------------------------------------------------------------
-	" 
+	printf "\n--------------------------------------------------------------------------------\n" 
 	
-	printf "Proceeding to root CA generation..."	
+	printf "Proceeding to root CA generation..."
 	gen_root_cert # Calling function to generate root CA cert
-	echo "DONE"
 
-	echo "
---------------------------------------------------------------------------------"
+	printf "\n--------------------------------------------------------------------------------\n\n"
 	
 	printf "Creating revokation list..."
-	sudo openssl ca -config openssl.cnf -gencrl -out crl.pem || exit 1
-					# We need root access to the private key.
-	echo "DONE"
-}
+	if sudo openssl ca -config openssl.cnf -gencrl -out crl.pem ; then
+		echo "DONE"
+	else
+		echo ERROR: could not create the CRL, exiting...
+		exit "$SSL_ERROR"
+	fi
 
-# A function to generate root self-signed certs
-gen_root_cert(){
-	echo "
-We now will generate a private Elliptic Curve Digital Signature Algorithm 
-(ECDSA) key, in one of the best curves, in human readable format (called PEM). 
-This ECDSA key, with this curve, is the one recommended by Mozilla for modern 
-server security."
+	printf "\n--------------------------------------------------------------------------------\n\n"
 
-	key="del-cakey.pem"
-	openssl genpkey -algorithm EC -pkeyopt ec_paramgen_curve:P-256 -out \
-	private/$key || exit 1
-	echo "ECDSA key generation: DONE. It is named 'cakey.pem'"
-
-	echo "
---------------------------------------------------------------------------------"
-		
-	echo "
-Next, let's change the format to PKCS#8 format, which is the standard. It will 
-prompt you for (1) sudo password --because of access contorls--, and a 
-passphrase. The passphrase is needed for encrypting the key. This way, we add a 
-second layer of security.
-Make sure to memorize it, or use a password manager such as Proton Pass."
-	
-	sudo openssl pkcs8 -topk8 -inform PEM -outform PEM -in private/$key -out \
-	private/cakey.pem -v2 aes128 || exit 1
-	echo "Format changing: DONE"
-
-	echo "
---------------------------------------------------------------------------------"
-
-	printf "
-Deleting old, unencrypted private key so that it cannot be recovered..."
-	# shred will make sure that the file is unrecoverable
-	shred -n 10 -u private/$key || exit 1
-	echo "DONE"
-	key="cakey.pem"
-
-	echo "
---------------------------------------------------------------------------------
-	"
-	printf "Setting access controls to the key..."
-	sudo chmod 400 private/$key || exit 1
-	echo "DONE. Next, you must set the right owner to the key."
-
-	echo "
---------------------------------------------------------------------------------"
-
-	printf "
-Before we create the certificate, let's set the Certificate Revocation List 
-(CRL) Distribution Point, which is the point you'll use to distribute the CRL. 
-Other's will use it to verify that a cert signed by you is not revoked.
-WARNING: Once it is set, you cannot change it.
-NOTE: the crl is currently named 'crl.pem', located in the current directory (./).
-Enter the CRL distribution point URI, 
-[ e.g., https://crl.example-root-ca.com/crl.pem ] :: "
-	read crldp || exit 1
-	sed -i "/\[ v3_ca \]/a\\crlDistributionPoints = URI:$crldp" openssl.cnf || \
-	exit 1
-	echo "DONE"
-
-	echo "
---------------------------------------------------------------------------------"
-
-	echo "
-Now, we will create a self-signed cert for our CA, in X.509 format, that lasts 
-10 years, with SHA2-512. This will use your private key, so it will prompt you 
-for the passphrase."
-
-	sudo openssl req -config openssl.cnf -key private/$key -new -x509 -days \
-	3650 -sha512 -extensions v3_ca -out ./cacert.pem || exit 1
-	sudo chmod 444 cacert.pem || exit 1
-	
-	echo "Cert creation: DONE. The cert is now accessible by anyone to read."
-	
-	echo "
---------------------------------------------------------------------------------
-	"	
-	printf "Creating a DER copy of the certificate..."
-	openssl x509 -outform der -in cacert.pem -out cacert.der || exit 1
-	echo "DONE"
-
-	echo "
---------------------------------------------------------------------------------
-	"
-	echo "Done! Your cert is now ready to be used!"
-}
-
-# The main function
-init_ca(){
-	printf "Before we proceed, make sure that this script is running in the right location. Everything that we will create will be a sub-directory/sub-files of this directory. Proceed? [Y/n] :: "
-	
-	while : ; do
-		read -r choice
-		if [[ $choice == "n" || $choice == "N" ]] ; then # Wrong directory
-			echo "Wrong directory, exiting..."
-			exit "$DIR_INIT_ERROR"
-
-		elif [[ $choice = "y" || $choice = "Y" ]] ; then # Correct directory
-			break
-			
-		else # right directory
-			printf "Invalid input. Try again :: "
-
-		fi
-
-	done
-	echo "Greate! Let's keep going"
-
-	printf "\n--------------------------------------------------------------------------------\n"
-
-	read -rp "\nChoose a name for your local root CA :: " name
-
-	echo "Greate name!"
-	
-	printf "\n--------------------------------------------------------------------------------\n"
-	
-	echo "Initializing.."
-	initialize "$name"
-
-	echo "
-	Users must now deliver their CSR to your csr/. From there, you can sign 
-	them."
-
-	echo "Scrip ends here."
-	echo "Things to do next
-	1. Add profiles to openssl.cnf for extensions (make a backup).
-	2. Configure the CRL extension in the profiles."
+	echo Initialization has finished.
 }

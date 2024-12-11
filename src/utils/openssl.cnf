@@ -2,7 +2,7 @@
 	default_ca		= ca_default # The name of the default CA section
 
 [ ca_default ] # defining the default CA section
-	dir				= /var/ca		# Default root directory
+	dir				= /home/guteshel/.sec_proj/practice/devsecops/autosignssl/src/pkix/root		# Default root directory
 	certs			= $dir/certsdb	# Default certificates directory
 	new_certs_dir	= $certs		# Default new certificates directory
 	database		= $dir/index.txt	# Database of certificates
