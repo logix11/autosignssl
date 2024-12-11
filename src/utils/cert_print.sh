@@ -1,16 +1,16 @@
 #!/bin/bash
 
 cert_print(){
-	echo "Select the certificate."
+	printf "\nSelect the certificate."
 
-	certs=(private/*)
-	echo "[-1] Exit"
+	certs=(certs/*)
+	echo "	[-1] Exit"
 	for i in "${!certs[@]}"; do
-		echo "[$i] ${certs[i]}"
+		echo "	[$i] ${certs[i]}"
 	done
 
 	while : ; do
-		read -rp "Your input :: " choice
+		read -rp "	Your input :: " choice
 		if [[ $choice = "-1" ]] ; then
 			echo "Exiting .."
 			return 0
@@ -20,7 +20,7 @@ cert_print(){
 
 		else
 			cert=${certs[$choice]}
-			if openssl x509 -in certs/"$cert" -noout -text ; then
+			if openssl x509 -in "$cert" -noout -text ; then
 				echo 
 			else
 				echo ERROR, could not print the certificate.

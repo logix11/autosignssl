@@ -3,7 +3,7 @@
 cert_revoke(){
 	echo "Select the certificate."
 
-	certs=(private/*)
+	certs=(certs/*)
 	echo "[-1] Exit"
 	for i in "${!certs[@]}" ; do
 		echo "[$i] ${certs[i]}"
@@ -22,7 +22,7 @@ cert_revoke(){
 		else
 			printf Revoking...
 			cert=${certs[$choice]}
-			if sudo openssl ca -config openssl.cnf -revoke certs/"$cert" ; then
+			if sudo openssl ca -config openssl.cnf -revoke "$cert" ; then
 				echo DONE.
 
 			else
