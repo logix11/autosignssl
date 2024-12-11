@@ -60,7 +60,7 @@ initialize(){
 
 [ ca_default ] # defining the default CA section
 	dir				= $(pwd)		# Default root directory
-	certs			= \$dir/certsdb	# Default certificates directory
+	certs			= \$dir/certs	# Default certificates directory
 	new_certs_dir	= \$certs		# Default new certificates directory
 	database		= \$dir/index.txt	# Database of certificates
 	certificate		= \$dir/cacert.pem	# The default CA's certificate
@@ -174,7 +174,7 @@ initialize(){
 	keyUsage				= keyAgreement, digitalSignature # used for key 
 															 # establishment
 	subjectAltName	= email:move # moves the email from the DN to the SAN
-	issuerAltName	= issuer:move
+	issuerAltName	= issuer:copy
 	extendedKeyUsage= serverAuth # An other usage of the key is to 
 		# authenticate the server to the client. I have commented it because 
 		# diffie-helmann is not used to authenticate but to establish keys.
@@ -190,7 +190,7 @@ initialize(){
 
 	sleep .5
 
-	printf "\n--------------------------------------------------------------------------------\n"
+	printf "\n--------------------------------------------------------------------------------\n\n"
 
 	printf "Creating DB index.txt..."
 	if touch index.txt ; then
@@ -200,7 +200,7 @@ initialize(){
 	fi
 	sleep .5
 
-	printf "\n--------------------------------------------------------------------------------\n"
+	printf "\n--------------------------------------------------------------------------------\n\n"
 
 	printf "Creating serial and CRL serial..."
 	if echo 00 > serial && echo 00 > crlnumber ; then						
@@ -210,11 +210,11 @@ initialize(){
 	fi
 	sleep .5
 
-	printf "\n--------------------------------------------------------------------------------\n"
+	printf "\n--------------------------------------------------------------------------------\n\n"
 
 	echo "Evinronment creation: DONE."
 
-	printf "\n--------------------------------------------------------------------------------\n" 
+	printf "\n--------------------------------------------------------------------------------\n\n" 
 	
 	printf "Proceeding to root CA generation..."
 	gen_root_cert # Calling function to generate root CA cert

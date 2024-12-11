@@ -12,7 +12,7 @@ UNKNOWN_ERROR=8
 
 # Importing files
 source "./utils/init_main_ca.sh"
-
+source ./utils/cert_man.sh
 # main() {
 
 echo "
@@ -72,7 +72,7 @@ do
 		main_init_ca
 	elif [[ $choice == "2" ]]
 	then
-		manage
+		cert_man
 	else
 		echo Invalid input. Try again.		
 	fi
