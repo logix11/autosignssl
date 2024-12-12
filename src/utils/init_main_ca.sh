@@ -1,22 +1,22 @@
 #!/bin/bash
 
 # Importing files
-source "./utils/ca_setup.sh"
+source "$SCRIPT_DIR/utils/ca_setup.sh"
 
 main_init_ca(){
-	printf "Before we proceed, make sure that this script is running in the right location. Everything that we will create will be a sub-directory/sub-files of this directory. Proceed? [Y/n] :: "
-	
+	echo -e "$WARNING Before we proceed, make sure that this script is running in the right location. Everything that we will create will be a sub-directory/sub-files of this directory."
+	local choice; local name;
 	while : ; do
-		read -r choice
+		read -rp "Proceed? [Y/n] :: " choice
 		if [[ $choice == "n" || $choice == "N" ]] ; then # Wrong directory
-			echo -e "Wrong directory, exiting..."
+			echo -e "$WARNING	Wrong directory, exiting..."
 			exit "$DIR_INIT_ERROR"
 
 		elif [[ $choice = "y" || $choice = "Y" ]] ; then # Correct directory
 			break
 			
 		else # right directory
-			printf "Invalid input. Try again :: "
+			echo -e "$WARNING	Invalid input."
 
 		fi
 
@@ -32,10 +32,11 @@ main_init_ca(){
 
 	printf "\n--------------------------------------------------------------------------------\n\n"
 	
-	echo "Initializing.."
+	echo -e "$INFO	Initializing.."
 	initialize "$name"
-
+	sleep .5
+	
 	printf "\n--------------------------------------------------------------------------------\n\n"
 
-	echo "Users must now deliver their CSR to your csr/. From there, you can sign them."
+	echo -e "$INFO	Users must now deliver their CSR to your csr/. From there, you can sign them."
 }

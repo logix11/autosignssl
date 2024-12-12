@@ -1,34 +1,33 @@
 #!/bin/bash
 
-source "./utils/pkey_gen.sh"
-source "./utils/csr_gen.sh"
-source "./utils/csr_sign.sh"
-source "./utils/cert_verif.sh"
-source "./utils/cert_print.sh"
-source "./utils/cert_revoke.sh"
+source "$SCRIPT_DIR/utils/pkey_gen.sh"
+source "$SCRIPT_DIR/utils/csr_gen.sh"
+source "$SCRIPT_DIR/utils/csr_sign.sh"
+source "$SCRIPT_DIR/utils/cert_verif.sh"
+source "$SCRIPT_DIR/utils/cert_print.sh"
+source "$SCRIPT_DIR/utils/cert_revoke.sh"
 
 cert_man(){
-	local condition
-	printf "\nThis script must be running in the SSH CA's home directory, i.e., in the sshca/ directory that was created earlier. If this condition is not satisfied, then you must guide the program to find that directory. Is the current directory it? [Y/n] "
+	local condition; local path
+	echo; echo -e "$WARNNIG	This script must be running in the CA's home directory, i.e., in the sshca/ directory that was created earlier. If this condition is not satisfied, then you must guide the program to find that directory."
 	while :
 	do
-		read -r condition
+		read -rp "Is the current directory it? [Y/n] " condition
 		if [[ $condition == "n" || $condition == "N" ]]
 		then
-			printf "Enter the path to the directory (or leave blank to exit) :: "
 			while :
 			do
-				read -r path
+				read -rp "Enter the path to the directory (or leave blank to exit) :: " path
 				if [[ -z $path ]]
 				then
-					echo Exiting...
+					echo -e "$WARNING	Exiting..."
 					exit 0
-				elif cd "$path"
+				elif cd "./$path"
 				then
-					echo -e "${INFO}	Moved to the sshca/ directory"
+					echo -e "$INFO	Moved to the directory"
 					break
 				else
-					printf "Invalid path. Try again :: "
+					echo -e "$WARNING	Invalid path."
 				fi
 			done
 			break
@@ -37,26 +36,26 @@ cert_man(){
 			echo Good job.
 			break
 		else
-			printf "Invalid input. Try again :: "
+			echo -e "$WARNING	Invalid input"
 		fi
 	done
-	echo "Proceeding..."
+	echo -e "$INFO	Proceeding..."
 
 	echo "Select an option"
+	local choice
 	while : ; do
-		printf "
-	[0] Exit.
+		echo "	[0] Exit.
 	[1] Generate a private key.
 	[2] Generate a CSR.
 	[3] Sign a cert.
 	[4] Verify a cert.
 	[5] Revoke a cert.
-	[6] Print out a cert.
-	
-	Your input :: "
+	[6] Print out a cert."
 
-		read -r choice
+		echo
+		read -rp "	Your input :: " choice
 		if [[ $choice = 0 ]] ; then
+			echo -e "$WARNING Exiting..."
 			exit 0
 		elif [[ $choice = 1 ]] ; then
 			pkey_gen
@@ -71,7 +70,7 @@ cert_man(){
 		elif [[ $choice = 6 ]] ; then
 			cert_print
 		else
-			echo "Invalid input."
+			echo -e "$WARNING	Invalid input."
 		fi
 	done
 }

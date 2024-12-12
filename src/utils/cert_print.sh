@@ -1,25 +1,27 @@
 #!/bin/bash
 
 cert_print(){
-	printf "\nSelect the certificate."
+	echo; echo "Select the certificate."
 
-	certs=(certs/*)
+	local certs; certs=(certs/*)
+	local i;
 	echo "	[-1] Exit"
 	for i in "${!certs[@]}"; do
 		echo "	[$i] ${certs[i]}"
 	done
-
+	local choice;
 	while : ; do
+		echo
 		read -rp "	Your input :: " choice
 		if [[ $choice = "-1" ]] ; then
-			echo "Exiting .."
+			echo -e "$WARNING	Exiting .."
 			return 0
 
 		elif [[ $choice > $i ]] ; then 
-			echo "Invalid choice. Try again"
+			echo -e "$WARNING	Invalid choice."
 
 		else
-			cert=${certs[$choice]}
+			local cert; cert=${certs[$choice]}
 			if openssl x509 -in "$cert" -noout -text ; then
 				echo 
 			else

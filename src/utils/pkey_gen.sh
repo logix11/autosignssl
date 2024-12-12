@@ -1,16 +1,16 @@
 #!/bin/bash
 
 pkey_gen(){
-	printf "Select a key to create.
+	local choice; 
+	echo; echo "Select a key to create.
 	[1] RSA key (discouraged).
 	[2] Elliptic Curve parameters (for ECDSA/ECDH).
-	[0] Exit
-	
-	Your input :: "
+	[0] Exit"
 	while : ; do
-		read -r choice
+		echo
+		read -rp "	Your input :: " choice
 		if [[ $choice == 0 ]] ; then
-			echo Exiting...
+			echo -e "$WARNING	Exiting..."
 			return 0
 		
 		elif [[ $choice == 1 ]] ; then
@@ -33,7 +33,7 @@ pkey_gen(){
 			fi
 			return 0
 		else
-			printf "Invalid input. Try again :: "
+			echo -e "$WARNING	Invalid input."
 		fi
 	done
 }

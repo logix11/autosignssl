@@ -3,24 +3,26 @@
 cert_revoke(){
 	echo "Select the certificate."
 
+	local certs; local i; local choice; local cert;
 	certs=(certs/*)
 	echo "	[-1] Exit"
-	for i in "	${!certs[@]}" ; do
-		echo "[$i] ${certs[i]}"
+	for i in "${!certs[@]}" ; do
+		echo "	[$i] ${certs[i]}"
 	done
 
 	while : ; do
-		read -rp "Your input :: " choice
+		echo
+		read -rp "	Your input :: " choice
 
 		if [[ $choice = "-1" ]] ; then
-			echo "Exiting..."
+			echo -e "$WARNING	Exiting..."
 			return 0
 
 		elif [[ $choice > $i ]] ; then 
-			echo "Invalid choice. Try again"
+			echo -e "$WARNING	Invalid choice."
 
 		else
-			printf Revoking...
+			echo -e "$INFO	Revoking..."
 			cert=${certs[$choice]}
 			if sudo openssl ca -config openssl.cnf -revoke "$cert" ; then
 				echo -e "$INFO	The certificate was revoked successfully."
@@ -30,7 +32,7 @@ cert_revoke(){
 				return 0
 			fi
 
-			printf "Refreching the CRL..."
+			echo -e "$INFO	Refreching the CRL..."
 			if sudo openssl ca -config openssl.cnf -gencrl -out crl.pem	; then
 			echo
 				echo -e "$INFO	The CRL was refreshed successfully."

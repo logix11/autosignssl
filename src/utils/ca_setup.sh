@@ -1,13 +1,13 @@
 #!/bin/bash
 
 # Importing files
-source "./utils/gen_root_ca_cert.sh"
+source "$SCRIPT_DIR/utils/gen_root_ca_cert.sh"
 
 initialize(){
 	# Firstly, we need to create five directories to confront to X.509
-	echo "Creating directories..."
+	echo -e "$INFO	Creating directories..."
 	if mkdir -p pkix/"$1"/{certs,crl,csr,newcerts,private} ; then
-		echo -e "$INFO	Creating directories: DONE."
+		echo -e "$INFO	Creating directories :: DONE."
 	else
 		echo -e "$ERROR	Could not create the directories due to an unknown error, exiting..."
 		exit "$DIR_INIT_ERROR"
@@ -21,44 +21,34 @@ initialize(){
 	fi
 	sleep .5
 
-	echo "Setting access controls to 'priate/'..."
+	echo -e "$INFO	Setting access controls to 'priate/'..."
 	if sudo chmod 700 private/ ; then
-		echo -e "$INFO	Setting access contros: DONE"
+		echo -e "$INFO	Setting access contros :: DONE"
 	else
-		echo -e "$ERROR: could not set access controls, exiting..."
+		echo -e "$ERROR	Could not set access controls, exiting..."
 		exit "$PERMS_ERROR"
 	fi
 	sleep .5
 
 	printf "\n--------------------------------------------------------------------------------\n\n"
 
-	echo "Copying OpenSSL's configuration file..."
+	echo -e "$INFO	Copying OpenSSL's configuration file..."
 
 	# Copying OpenSSL's configuration file, preserving some attributes
 	if sudo cp --preserve=mode,ownership,timestamps,context,xattr \
 		/etc/ssl/openssl.cnf ./openssl.cnf ; then
-		echo -e "$INFO	Copying OpenSSL's configuration file:DONE."
-################################################################################
-################################################################################
-################################################################################
-################################################################################
-################################################################################
-################################################################################
-################################################################################
-################################################################################
-################################################################################
-################################################################################
-################################################################################
-################################################################################
+		echo -e "$INFO	Copying OpenSSL's configuration file :: DONE."
+
 	else
-		echo ERROR: could not copy openssl.cnf configuration file, exiting...
+		echo -e "$ERROR	Could not copy openssl.cnf configuration file, exiting..."
 		exit "$CP_ERROR"
 	fi
 
-	echo "We've copied openssl.cnf for no reason other than preserving the configuration file's attributes."
-	echo "We'll overwrite it now. We need your privileges. But before that, let's learn more about you!"
-	echo "Postscriptum: this knowledge will be used in nothing other than setting your OpenSSL configuration :)"
+	echo -e "$INFO	We've copied openssl.cnf for no reason other than preserving the configuration file's attributes."
+	echo -e "$INFO	We'll overwrite it now. We need your privileges. But before that, let's learn more about you!"
+	echo -e "$INFO	Postscriptum: this knowledge will be used in nothing other than setting your OpenSSL configuration :)"
 	
+	local country; local state; local locality; local org
 	read -rp "What's your country's two character code? :: " country
 
 	read -rp "What's your state or province's name? :: " state
@@ -71,9 +61,9 @@ initialize(){
 	default_ca		= ca_default # The name of the default CA section
 
 [ ca_default ] # defining the default CA section
-	dir				= $(pwd)		# Default root directory
-	certs			= \$dir/certs	# Default certificates directory
-	new_certs_dir	= \$certs		# Default new certificates directory
+	dir				= $(pwd)			# Default root directory
+	certs			= \$dir/certs		# Default certificates directory
+	new_certs_dir	= \$certs			# Default new certificates directory
 	database		= \$dir/index.txt	# Database of certificates
 	certificate		= \$dir/cacert.pem	# The default CA's certificate
 	private_key		= \$dir/private/cakey.pem	# the default CA's private key
@@ -82,22 +72,22 @@ initialize(){
 	crlnumber		= \$dir/crlnumber	# CRL serial
 	crl				= \$crldir/crl.pem	# CRL file.
 	RANDFILE		= \$dir/private/.rand	# File of random data, need to set up the script to fill it from the /dev/urandom
-	name_opt		= ca_default # How the name is displayed to you for confirmation
-	cert_opt		= ca_default # How the certificate is displayed to you for confirmation
+	name_opt		= ca_default 		# How the name is displayed to you for confirmation
+	cert_opt		= ca_default 		# How the certificate is displayed to you for confirmation
 	default_days	= 90
 	default_crl_days= 30
 	default_md		= sha256
-	preserve		= no		# Do not allow people to determine the order of their DN.
-	policy			= policy_match # Strict policy
+	preserve		= no				# Do not allow people to determine the order of their DN.
+	policy			= policy_match 		# Strict policy
 
 [ policy_match ]
-	countryName			= match
-	stateOrProvinceName	= match
-	localityName		= match	# Locality name (e.g., city)
-	organizationName	= match	
-	organizationalUnitName = optional
-	commonName			= supplied
-	emailAddress		= optional
+	countryName				= match
+	stateOrProvinceName		= match
+	localityName			= match		# Locality name (e.g., city)
+	organizationName		= match	
+	organizationalUnitName 	= optional
+	commonName				= supplied
+	emailAddress			= optional
 
 [ policy_anything ]
 	countryName				= optional
@@ -109,19 +99,19 @@ initialize(){
 	emailAddress			= optional
 
 [ req ]	# a section for the req command
-	default_bits			= 3072
-	default_keyfile			= \dir/privkey.pem
-	distinguished_name		= req_distinguished_name # referencing a section
-	attributes				= req_attributes  # referencing a section
-	x509_extensions			= v3_ca # referencing a section
-	req_extensions			= v3_req # referencing a section
-	string_mask 			= utf8only
+	default_bits		= 3072
+	default_keyfile		= \dir/privkey.pem
+	distinguished_name	= req_distinguished_name	# referencing a section
+	attributes			= req_attributes  			# referencing a section
+	x509_extensions		= v3_ca  					# referencing a section
+	req_extensions		= v3_req 					# referencing a section
+	string_mask 		= utf8only
 
 [ req_distinguished_name ]
-	countryName				= Country Name (2 letter code)
-	countryName_default		= $country
-	countryName_min			= 2
-	countryName_max			= 2
+	countryName			= Country Name (2 letter code)
+	countryName_default	= $country
+	countryName_min		= 2
+	countryName_max		= 2
 
 	stateOrProvinceName		= State or Province Name (full name)
 	stateOrProvinceName_default	= $state
@@ -141,18 +131,18 @@ initialize(){
 	emailAddress_max	= 64
 
 [ req_attributes ]
-	challengePassword			= A challenge password
-	challengePassword_min		= 8
-	challengePassword_max		= 20
+	challengePassword		= A challenge password
+	challengePassword_min	= 8
+	challengePassword_max	= 20
 	
 [ v3_req ]
 
-	basicConstraints= CA:FALSE
-	keyUsage		= digitalSignature, keyAgreement
-	subjectAltName	= email:move
+	basicConstraints	= CA:FALSE
+	keyUsage			= digitalSignature, keyAgreement
+	subjectAltName		= email:move
 
 [ ecdsa_polsect ]
-	policyIdentifier 	= 1.3.6.1.5.5.7.3.1	# for serverAuth
+	policyIdentifier	= 1.3.6.1.5.5.7.3.1	# for serverAuth
 	userNotice.1 		= @notice
 
 [ ecdsa_polsect ]
@@ -165,18 +155,18 @@ initialize(){
 	noticeNumbers	= 1	# I only have one security policy anyway.
 
 [ ca_polsect ]
-	policyIdentifier = 1.3.6.1.5.5.7.3.27	# for serverAuth
-	userNotice.1 	= @notice
+	policyIdentifier	= 1.3.6.1.5.5.7.3.27	# for serverAuth
+	userNotice.1 		= @notice
 
 [ v3_ca ]
-	subjectKeyIdentifier	= hash
-	authorityKeyIdentifier	= keyid:always,issuer:always
-	basicConstraints		= critical,CA:true
-	subjectAltName			= email:move
-	issuerAltName			= email:move
-	keyUsage 				= cRLSign, keyCertSign, digitalSignature
-	subjectAltName			= email:copy
-	certificatePolicies 	= ia5org, @ca_polsect
+	subjectKeyIdentifier		= hash
+	authorityKeyIdentifier		= keyid:always,issuer:always
+	basicConstraints			= critical,CA:true
+	subjectAltName				= email:move
+	issuerAltName				= email:move
+	keyUsage 					= cRLSign, keyCertSign, digitalSignature
+	subjectAltName				= email:copy
+	certificatePolicies 		= ia5org, @ca_polsect
 
 [ v3_server_kex ] # profile
 	basicConstraints		= CA:FALSE 
@@ -204,44 +194,47 @@ initialize(){
 
 	printf "\n--------------------------------------------------------------------------------\n\n"
 
-	printf "Creating DB index.txt..."
+	echo -e "$INFO	Creating DB index.txt..."
 	if touch index.txt ; then
-		echo "DONE."
+		echo -e "$INFO	DB creating ::  DONE."
 	else
-		echo ERROR: could not create index.txt, is it a permission error? Please create index.txt on your own.
+		echo -e "$ERROR	Could not create index.txt, is it a permission error? Please create index.txt on your own."
 	fi
 	sleep .5
 
 	printf "\n--------------------------------------------------------------------------------\n\n"
 
-	printf "Creating serial and CRL serial..."
+	echo -e "$INFO	Creating serial and CRL serial..."
 	if echo 00 > serial && echo 00 > crlnumber ; then						
-		echo "DONE."
+		echo -e "$INFO	Serial and CRL serial creation ::  DONE."
 	else
-		echo "ERROR: could NOT create the certificate serial file and CRL serial file. Please do so, and put 00 in each one of them." 
+		echo -e"$ERROR	Could NOT create the certificate serial file and CRL serial file. Please do so, and put 00 in each one of them." 
 	fi
 	sleep .5
 
 	printf "\n--------------------------------------------------------------------------------\n\n"
 
-	echo "Evinronment creation: DONE."
-
+	echo -e "$INFO	Environment creation ::  DONE."
+	sleep .5
+	
 	printf "\n--------------------------------------------------------------------------------\n\n" 
 	
-	printf "Proceeding to root CA generation..."
+	echo -e "$INFO	Proceeding to root CA generation..."
 	gen_root_cert # Calling function to generate root CA cert
+	sleep .5
 
 	printf "\n--------------------------------------------------------------------------------\n\n"
 	
-	printf "Creating revokation list..."
+	echo -e "$INFO	Creating certificate revokation list..."
 	if sudo openssl ca -config openssl.cnf -gencrl -out crl.pem ; then
-		echo "DONE"
+		echo -e "$INFO	CRL creation :: DONE"
 	else
-		echo ERROR: could not create the CRL, exiting...
+		echo -e "$ERROR	Could not create the CRL, exiting..."
 		exit "$SSL_ERROR"
 	fi
+	sleep .5
 
 	printf "\n--------------------------------------------------------------------------------\n\n"
 
-	echo Initialization has finished.
+	echo -e "$INFO	Initialization has finished."
 }

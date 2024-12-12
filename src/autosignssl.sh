@@ -11,8 +11,9 @@ CP_ERROR=7
 UNKNOWN_ERROR=8
 
 # Importing files
-source "./utils/init_main_ca.sh"
-source ./utils/cert_man.sh
+SCRIPT_DIR=$(dirname "$(realpath "$0")")
+source $SCRIPT_DIR/utils/init_main_ca.sh
+source $SCRIPT_DIR/utils/cert_man.sh
 
 # Define color variables
 BLUE='\033[97;44m'      # Dark Blue background, white text
@@ -47,7 +48,7 @@ You can do the following
 
 Let us get started, shall we?"
 
-echo "Ensuring that OpenSSL is installed before running this script..."
+echo -e "$INFO	Ensuring that OpenSSL is installed before running this script..."
 sleep .5
 
 # Check if OpenSSL is installed
@@ -63,18 +64,17 @@ sleep .5
 while :
 do
 	
-	printf "\n--------------------------------------------------------------------------------\n"
+	printf "\n--------------------------------------------------------------------------------\n\n"
 
-	printf "\nSelect an option.
+	echo "Select an option.
 	[0] Exit.
 	[1] Establish the CA.
-	[2] Manage the CA
-	
-	Your input :: "
-	read -r choice
+	[2] Manage the CA"
+	echo
+	read -rp "	Your input :: " choice
 	if [[ $choice == "0" ]]
 	then
-		echo Exiting...
+		echo -e "$WARNING	Exiting..."
 		exit 0
 	elif [[ $choice == "1" ]]
 	then
@@ -83,6 +83,6 @@ do
 	then
 		cert_man
 	else
-		echo -e "${ERROR}	Invalid input. Try again."		
+		echo -e "${ERROR}	Invalid input."		
 	fi
 done
