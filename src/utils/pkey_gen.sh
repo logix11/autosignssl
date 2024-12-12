@@ -10,25 +10,26 @@ pkey_gen(){
 	while : ; do
 		read -r choice
 		if [[ $choice == 0 ]] ; then
+			echo Exiting...
 			return 0
 		
 		elif [[ $choice == 1 ]] ; then
 			if openssl genpkey -algorithm RSA -out private/kpriv_rsa.pem -pkeyopt \
 				rsa_keygen_bits:3072 -outform PEM ; then
-				echo Private key generation was done successfully.
-				echo "The key is called kpriv_rsa.pem"
+				echo -e "${INFO}	Private key generation was done successfully."
+				echo -e "${INFO}	The key is called kpriv_rsa.pem"
 			else
-				echo ERROR: could not generate the RSA key.
+				echo -e "${ERROR}	Could not generate the RSA key."
 			fi
 			return 0
 		
 		elif [[ $choice == 2 ]] ; then
 			if openssl genpkey -algorithm EC -pkeyopt ec_paramgen_curve:P-256 \
 				-out private/kpriv_ec.pem -outform PEM ; then
-				echo Private key generation was done successfully.
-				echo "The key is called kpriv_ec.pem"
+				echo -e "${INFO}	Private key generation was done successfully."
+				echo -e "${INFO}	The key is called kpriv_ec.pem"
 			else
-				echo ERROR: could not generate the RSA key.
+				echo -E "${ERROR}	Could not generate the RSA key."
 			fi
 			return 0
 		else

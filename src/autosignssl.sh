@@ -13,8 +13,17 @@ UNKNOWN_ERROR=8
 # Importing files
 source "./utils/init_main_ca.sh"
 source ./utils/cert_man.sh
-# main() {
 
+# Define color variables
+BLUE='\033[97;44m'      # Dark Blue background, white text
+RED='\033[41m'       # Red background
+YELLOW='\033[48;5;214m' # Yellow background, dark text
+RESET='\033[0m'      # Reset to default
+
+
+INFO="${BLUE}[ INFO ]${RESET}"
+ERROR="${RED}[ ERROR ]${RESET}"
+WARNING="${YELLOW}[ WARNING ]${RESET}"
 echo "
    _____          __          _________.__                _________ _________.____  
   /  _  \  __ ___/  |_  ____ /   _____/|__| ____   ____  /   _____//   _____/|    |
@@ -38,17 +47,17 @@ You can do the following
 
 Let us get started, shall we?"
 
-printf "Ensuring that OpenSSL is installed before running this script..."
+echo "Ensuring that OpenSSL is installed before running this script..."
 sleep .5
 
 # Check if OpenSSL is installed
 if ! command -v openssl &> /dev/null
 then
-	echo "No OpenSSL, exiting..."
+	echo "${ERROR}	No OpenSSL, exiting..."
 	exit $SSL_ERROR
 fi
 
-echo "DONE, it is indeed installed."
+echo -e "${INFO}	DONE, it is indeed installed."
 sleep .5
 
 while :
@@ -74,6 +83,6 @@ do
 	then
 		cert_man
 	else
-		echo Invalid input. Try again.		
+		echo "${ERROR}	Invalid input. Try again."		
 	fi
 done

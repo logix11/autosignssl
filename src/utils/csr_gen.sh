@@ -1,7 +1,7 @@
 #!/bin/bash
 
 csr_gen(){
-	printf "\nSelect the private key."
+	printf "\nSelect the private key.\n"
 	
 	keys=($(sudo ls private/*)) # List the items and store them in the variable	
 	echo "	[-1] Exit"
@@ -22,11 +22,11 @@ csr_gen(){
 			if openssl req -config openssl.cnf -outform PEM -out \
 					csr/csr-"new" -new -key "${keys[choice]}" -sha512 
 			then
-				echo Certificate signing request was generated successfully.
-				echo WARNING: You should rush to change its name
+				echo -e "${INFO}	Certificate signing request was generated successfully."
+				echo -e "${WARNING}	You should rush to change its name"
 				return 0
 			else
-				echo ERROR, the certificate signing request generation was unseccessful.
+				echo -e "${ERROR}, the certificate signing request generation was unseccessful."
 			fi
 		fi
 	done

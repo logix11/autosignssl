@@ -25,7 +25,7 @@ cert_man(){
 					exit "$PATH_ERROR"
 				elif cd "$path"
 				then
-					echo "Moved to the sshca/ directory"
+					echo -e "${INFO}	Moved to the sshca/ directory"
 					break
 				else
 					printf "Invalid path. Try again :: "
