@@ -22,7 +22,7 @@ cert_man(){
 				if [[ -z $path ]]
 				then
 					echo Exiting...
-					exit "$PATH_ERROR"
+					exit 0
 				elif cd "$path"
 				then
 					echo -e "${INFO}	Moved to the sshca/ directory"
@@ -75,4 +75,3 @@ cert_man(){
 		fi
 	done
 }
-main

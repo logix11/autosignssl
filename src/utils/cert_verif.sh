@@ -4,9 +4,9 @@ cert_verif(){
 	echo "Select the certificate."
 	
 	certs=(certs/*)
-	echo "[-1] Exit"
+	echo "	[-1] Exit"
 	for i in "${!certs[@]}"; do
-		echo "[$i] ${certs[i]}"
+		echo "	[$i] ${certs[i]}"
 	done
 
 	while : ; do
@@ -22,7 +22,7 @@ cert_verif(){
 				"${certs[choice]}"; then
 				echo
 			else
-				echo ERROR, could not verify the certificate due to an unknown error
+				echo -e "$ERROR	Could not verify the certificate."
 			fi
 			break	
 		fi

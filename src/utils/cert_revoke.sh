@@ -4,8 +4,8 @@ cert_revoke(){
 	echo "Select the certificate."
 
 	certs=(certs/*)
-	echo "[-1] Exit"
-	for i in "${!certs[@]}" ; do
+	echo "	[-1] Exit"
+	for i in "	${!certs[@]}" ; do
 		echo "[$i] ${certs[i]}"
 	done
 
@@ -23,20 +23,20 @@ cert_revoke(){
 			printf Revoking...
 			cert=${certs[$choice]}
 			if sudo openssl ca -config openssl.cnf -revoke "$cert" ; then
-				echo DONE.
+				echo -e "$INFO	The certificate was revoked successfully."
 
 			else
-				echo ERROR, could not revoke the certificate.
+				echo -e "$ERROR	Could not revoke the certificate."
 				return 0
 			fi
 
 			printf "Refreching the CRL..."
 			if sudo openssl ca -config openssl.cnf -gencrl -out crl.pem	; then
 			echo
-				echo DONE.
+				echo -e "$INFO	The CRL was refreshed successfully."
 				return 0
 			else
-				echo ERROR, could not refresh the CRL...
+				echo -e "$ERROR	Could not refresh the CRL."
 				return 0
 			fi
 		fi

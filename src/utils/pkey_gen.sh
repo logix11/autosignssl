@@ -29,7 +29,7 @@ pkey_gen(){
 				echo -e "${INFO}	Private key generation was done successfully."
 				echo -e "${INFO}	The key is called kpriv_ec.pem"
 			else
-				echo -E "${ERROR}	Could not generate the RSA key."
+				echo -e "${ERROR}	Could not generate the RSA key."
 			fi
 			return 0
 		else

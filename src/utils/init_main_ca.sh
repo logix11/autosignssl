@@ -9,7 +9,7 @@ main_init_ca(){
 	while : ; do
 		read -r choice
 		if [[ $choice == "n" || $choice == "N" ]] ; then # Wrong directory
-			echo "Wrong directory, exiting..."
+			echo -e "Wrong directory, exiting..."
 			exit "$DIR_INIT_ERROR"
 
 		elif [[ $choice = "y" || $choice = "Y" ]] ; then # Correct directory

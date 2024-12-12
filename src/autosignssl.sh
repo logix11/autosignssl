@@ -53,7 +53,7 @@ sleep .5
 # Check if OpenSSL is installed
 if ! command -v openssl &> /dev/null
 then
-	echo "${ERROR}	No OpenSSL, exiting..."
+	echo -e "${ERROR}	No OpenSSL, exiting..."
 	exit $SSL_ERROR
 fi
 
@@ -83,6 +83,6 @@ do
 	then
 		cert_man
 	else
-		echo "${ERROR}	Invalid input. Try again."		
+		echo -e "${ERROR}	Invalid input. Try again."		
 	fi
 done

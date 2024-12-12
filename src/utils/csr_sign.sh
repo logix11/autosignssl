@@ -4,9 +4,9 @@ csr_sign(){
 	echo Select the certificate.
 
 	csrs=(csr/*) # List the items and store them in the variable	
-	echo "[-1] Exit"
+	echo "	[-1] Exit"
 	for i in "${!csrs[@]}"; do
-		echo "[$i] ${csrs[i]}"
+		echo "	[$i] ${csrs[i]}"
 	done
 
 	printf "Your input :: "
@@ -25,7 +25,7 @@ csr_sign(){
 			if grep "# profile" openssl.cnf ; then
 				echo
 			else
-				echo ERROR, could not show extensions...
+				echo -e "$ERROR	Could not show extensions..."
 				return 0
 			fi
 			break	
@@ -34,6 +34,10 @@ csr_sign(){
 	printf "Your input :: "
 	read -r ext
 	
-	sudo openssl ca -config openssl.cnf -notext -extensions "$ext" -in \
-		"${csrs[choice]}" -out certs/newcert.cert 
+	if sudo openssl ca -config openssl.cnf -notext -extensions "$ext" -in \
+		"${csrs[choice]}" -out certs/newcert.cert ; then
+		echo -e "$INFO	The certificate was signed successfully."
+	else
+		echo -e "$ERROR	There was an error while signing the certificate."
+	fi
 }

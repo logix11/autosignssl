@@ -7,37 +7,49 @@ initialize(){
 	# Firstly, we need to create five directories to confront to X.509
 	echo "Creating directories..."
 	if mkdir -p pkix/"$1"/{certs,crl,csr,newcerts,private} ; then
-		echo DONE.
+		echo -e "$INFO	Creating directories: DONE."
 	else
-		echo ERROR: could not create the directories due to an unknown error, exiting...
+		echo -e "$ERROR	Could not create the directories due to an unknown error, exiting..."
 		exit "$DIR_INIT_ERROR"
 	fi
 
 	if cd "pkix/$1" ; then
-		echo "Moving to 'pkix/'... DONE"
+		echo -e "$INFO	Moving to 'pkix/'... DONE"
 	else
-		echo "ERROR: could not move to 'pkix/', exiting..."
+		echo -e "$ERROR	Could not move to 'pkix/', exiting..."
 		exit "$CD_ERROR"
 	fi
 	sleep .5
 
-	printf "Setting access controls to 'priate/'...\n"
+	echo "Setting access controls to 'priate/'..."
 	if sudo chmod 700 private/ ; then
-		echo DONE
+		echo -e "$INFO	Setting access contros: DONE"
 	else
-		echo ERROR: could not set access controls, exiting...
+		echo -e "$ERROR: could not set access controls, exiting..."
 		exit "$PERMS_ERROR"
 	fi
 	sleep .5
 
-	printf "\n--------------------------------------------------------------------------------\n"
+	printf "\n--------------------------------------------------------------------------------\n\n"
 
-	printf "\nCopying OpenSSL's configuration file..."
+	echo "Copying OpenSSL's configuration file..."
 
 	# Copying OpenSSL's configuration file, preserving some attributes
 	if sudo cp --preserve=mode,ownership,timestamps,context,xattr \
 		/etc/ssl/openssl.cnf ./openssl.cnf ; then
-		echo DONE
+		echo -e "$INFO	Copying OpenSSL's configuration file:DONE."
+################################################################################
+################################################################################
+################################################################################
+################################################################################
+################################################################################
+################################################################################
+################################################################################
+################################################################################
+################################################################################
+################################################################################
+################################################################################
+################################################################################
 	else
 		echo ERROR: could not copy openssl.cnf configuration file, exiting...
 		exit "$CP_ERROR"

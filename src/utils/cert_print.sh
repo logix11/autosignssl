@@ -23,7 +23,7 @@ cert_print(){
 			if openssl x509 -in "$cert" -noout -text ; then
 				echo 
 			else
-				echo ERROR, could not print the certificate.
+				echo -e "$ERROR	Could not print the certificate."
 				return 0
 			fi		
 			break	
