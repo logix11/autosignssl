@@ -35,8 +35,8 @@ csr_sign(){
 	
 	if sudo openssl ca -config openssl.cnf -notext -extensions "$ext" -in \
 		"${csrs[choice]}" -out certs/newcert.cert ; then
-		echo -e "$INFO	The certificate was signed successfully."
+		echo -e "$INFO	DONE."
 	else
-		echo -e "$ERROR	There was an error while signing the certificate."
+		echo -e "$ERROR	There was an error."
 	fi
 }

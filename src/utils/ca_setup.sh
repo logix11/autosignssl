@@ -139,7 +139,7 @@ initialize(){
 
 	basicConstraints	= CA:FALSE
 	keyUsage			= digitalSignature, keyAgreement
-	subjectAltName		= email:move
+	#subjectAltName		= email:copy
 
 [ ecdsa_polsect ]
 	policyIdentifier	= 1.3.6.1.5.5.7.3.1	# for serverAuth
@@ -162,8 +162,8 @@ initialize(){
 	subjectKeyIdentifier		= hash
 	authorityKeyIdentifier		= keyid:always,issuer:always
 	basicConstraints			= critical,CA:true
-	subjectAltName				= email:move
-	issuerAltName				= email:move
+	subjectAltName				= email:copy
+	issuerAltName				= email:copy
 	keyUsage 					= cRLSign, keyCertSign, digitalSignature
 	subjectAltName				= email:copy
 	certificatePolicies 		= ia5org, @ca_polsect
@@ -175,7 +175,7 @@ initialize(){
 	subjectKeyIdentifier	= hash			
 	keyUsage				= keyAgreement, digitalSignature # used for key 
 															 # establishment
-	subjectAltName	= email:move # moves the email from the DN to the SAN
+	subjectAltName	= email:copy # moves the email from the DN to the SAN
 	issuerAltName	= issuer:copy
 	extendedKeyUsage= serverAuth # An other usage of the key is to 
 		# authenticate the server to the client. I have commented it because 
@@ -186,8 +186,8 @@ initialize(){
 	authorityKeyIdentifier	= keyid,issuer
 	subjectKeyIdentifier	= hash
 	keyUsage				= digitalSignature, keyEncipherment
-	subjectAltName			= email:move
-	issuerAltName			= issuer:move
+	subjectAltName			= email:copy
+	issuerAltName			= issuer:copy
 	extendedKeyUsage		= serverAuth" | sudo tee openssl.cnf
 
 	sleep .5
