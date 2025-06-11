@@ -6,13 +6,14 @@ source "$SCRIPT_DIR/utils/csr_sign.sh"
 source "$SCRIPT_DIR/utils/cert_verif.sh"
 source "$SCRIPT_DIR/utils/cert_print.sh"
 source "$SCRIPT_DIR/utils/cert_revoke.sh"
+source "$SCRIPT_DIR/utils/csr_gen.sh"
 
 cert_man(){
 	local condition; local path
 	echo; echo -e "$WARNNIG	This script must be running in the CA's home directory, i.e., in the sshca/ directory that was created earlier. If this condition is not satisfied, then you must guide the program to find that directory."
 	while :
 	do
-		read -rp "Is the current directory it? [Y/n] " condition
+		read -rp "	Is the current directory it? [Y/n] " condition
 		if [[ $condition == "n" || $condition == "N" ]]
 		then
 			while :
@@ -46,11 +47,11 @@ cert_man(){
 	while : ; do
 		echo "	[0] Exit.
 	[1] Generate a private key.
-	[2] Generate a CSR.
-	[3] Sign a cert.
-	[4] Verify a cert.
-	[5] Revoke a cert.
-	[6] Print out a cert."
+	[2] Generate a certificate signing request (CSR).
+	[3] Sign a certificate.
+	[4] Verify a certificate.
+	[5] Revoke a certificate.
+	[6] Print out a certificate."
 
 		echo
 		read -rp "	Your input :: " choice
@@ -69,8 +70,6 @@ cert_man(){
 			cert_revoke
 		elif [[ $choice = 6 ]] ; then
 			cert_print
-		elif [[ $choice = 7 ]] ; then
-			echo "This feature is not yet implemented, try again later."
 		else
 			echo -e "$WARNING	Invalid input."
 		fi

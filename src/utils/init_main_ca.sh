@@ -25,8 +25,7 @@ main_init_ca(){
 
 	printf "\n--------------------------------------------------------------------------------\n\n"
 
-	printf "$INFO	Choose a name for your local root CA :: "
-	read -r name
+	read -rp "Choose a name for your local root CA :: " name
 
 	printf "\n--------------------------------------------------------------------------------\n\n"
 	
