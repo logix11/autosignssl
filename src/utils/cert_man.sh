@@ -69,6 +69,8 @@ cert_man(){
 			cert_revoke
 		elif [[ $choice = 6 ]] ; then
 			cert_print
+		elif [[ $choice = 7 ]] ; then
+			echo "This feature is not yet implemented, try again later."
 		else
 			echo -e "$WARNING	Invalid input."
 		fi

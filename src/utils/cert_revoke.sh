@@ -1,4 +1,3 @@
-#!/bin/bash
 
 cert_revoke(){
 	echo "Select the certificate."

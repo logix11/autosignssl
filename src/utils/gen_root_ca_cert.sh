@@ -1,4 +1,3 @@
-#!/bin/bash
 
 gen_root_cert(){
 	echo -e "$INFO	We now will generate a private Elliptic Curve Digital Signature Algorithm (ECDSA) key, in one of the best curves, in human readable format (called PEM). This ECDSA key, with this curve, is the one recommended by Mozilla for modern server security.\n"
@@ -52,7 +51,7 @@ gen_root_cert(){
 
 	printf "\n--------------------------------------------------------------------------------\n\n"
 
-	echo -e "$INFO	Before we create the certificate, let's set the Certificate Revocation List (CRL) Distribution Point, which is the point you'll use to distribute the CRL. Other's will use it to verify that a certificatesigned by you is not revoked. WARNING: Once it is set, you cannot change it. NOTE: the crl is currently named 'crl.pem', located in the current directory (./)."
+	echo -e "$INFO	Before we create the certificate, let's set the Certificate Revocation List (CRL) Distribution Point, which is the point you'll use to distribute the CRL. Other's will use it to verify that a certificate signed by you is not revoked. WARNING: Once it is set, you cannot change it. NOTE: the crl is currently named 'crl.pem', located in the current directory (./)."
 
 	read -rp "Enter the CRL distribution point URI, [ e.g., https://crl.example-root-ca.com/crl.pem ] :: " crldp
 	if sed -i "/\[ v3_ca \]/a\\crlDistributionPoints = URI:$crldp" openssl.cnf ; then
@@ -84,7 +83,7 @@ gen_root_cert(){
 	fi
 	sleep .5
 
-	echo -e "$INFO	The certificateis now accessible by anyone to read."
+	echo -e "$INFO	The certificate is now accessible by anyone to read."
 	
 	printf "\n--------------------------------------------------------------------------------\n\n"
 

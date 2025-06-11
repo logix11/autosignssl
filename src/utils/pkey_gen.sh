@@ -16,8 +16,7 @@ pkey_gen(){
 		elif [[ $choice == 1 ]] ; then
 			if openssl genpkey -algorithm RSA -out private/kpriv_rsa.pem -pkeyopt \
 				rsa_keygen_bits:3072 -outform PEM ; then
-				echo -e "${INFO}	Private key generation was done successfully."
-				echo -e "${INFO}	The key is called kpriv_rsa.pem"
+				echo -e "${INFO}	Private key generation was done successfully. The key is called kpriv_rsa.pem"
 			else
 				echo -e "${ERROR}	Could not generate the RSA key."
 			fi
@@ -26,8 +25,7 @@ pkey_gen(){
 		elif [[ $choice == 2 ]] ; then
 			if openssl genpkey -algorithm EC -pkeyopt ec_paramgen_curve:P-256 \
 				-out private/kpriv_ec.pem -outform PEM ; then
-				echo -e "${INFO}	Private key generation was done successfully."
-				echo -e "${INFO}	The key is called kpriv_ec.pem"
+				echo -e "${INFO}	Private key generation was done successfully. key is called kpriv_ec.pem"
 			else
 				echo -e "${ERROR}	Could not generate the RSA key."
 			fi

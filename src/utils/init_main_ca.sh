@@ -5,6 +5,7 @@ source "$SCRIPT_DIR/utils/ca_setup.sh"
 
 main_init_ca(){
 	echo -e "$WARNING Before we proceed, make sure that this script is running in the right location. Everything that we will create will be a sub-directory/sub-files of this directory."
+
 	local choice; local name;
 	while : ; do
 		read -rp "Proceed? [Y/n] :: " choice
@@ -17,24 +18,20 @@ main_init_ca(){
 			
 		else # right directory
 			echo -e "$WARNING	Invalid input."
-
 		fi
 
 	done
-	echo "Greate! Let's keep going"
+	echo -e "$INFO	Greate! Let's keep going"
 
 	printf "\n--------------------------------------------------------------------------------\n\n"
 
-	read -rp "Choose a name for your local root CA :: " name
-
-	echo "Greate name!"
-	sleep .5
+	printf "$INFO	Choose a name for your local root CA :: "
+	read -r name
 
 	printf "\n--------------------------------------------------------------------------------\n\n"
 	
 	echo -e "$INFO	Initializing.."
 	initialize "$name"
-	sleep .5
 	
 	printf "\n--------------------------------------------------------------------------------\n\n"
 

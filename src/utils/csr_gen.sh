@@ -23,8 +23,7 @@ csr_gen(){
 			if openssl req -config openssl.cnf -outform PEM -out \
 					csr/new.pem -new -key "${keys[choice]}" -sha512 
 			then
-				echo -e "${INFO}	Certificate signing request was generated successfully."
-				echo -e "${WARNING}	You should rush to change its name"
+				echo -e "${INFO}	Certificate signing request was generated successfully. You should rush to change its name"
 				return 0
 			else
 				echo -e "${ERROR}, the certificate signing request generation was unseccessful."

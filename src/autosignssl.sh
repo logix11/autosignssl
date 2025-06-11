@@ -48,8 +48,7 @@ You can do the following
 
 Let us get started, shall we?"
 
-echo -e "$INFO	Ensuring that OpenSSL is installed before running this script..."
-sleep .5
+echo -e "$INFO	This script needs OpenSSL to run. Checking that OpenSSL is installed..."
 
 # Check if OpenSSL is installed
 if ! command -v openssl &> /dev/null
@@ -59,7 +58,6 @@ then
 fi
 
 echo -e "${INFO}	DONE, it is indeed installed."
-sleep .5
 
 while :
 do
@@ -71,6 +69,7 @@ do
 	[1] Establish the CA.
 	[2] Manage the CA"
 	echo
+
 	read -rp "	Your input :: " choice
 	if [[ $choice == "0" ]]
 	then
