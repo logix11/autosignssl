@@ -13,36 +13,35 @@ cert_man(){
 	echo; echo -e "$WARNNIG	This script must be running in the CA's home directory, i.e., in the sshca/ directory that was created earlier. If this condition is not satisfied, then you must guide the program to find that directory."
 	while :
 	do
-		read -rp "	Is the current directory it? [Y/n] " condition
+	    read -rp "	Is the current directory it? [Y/n] " condition
 		if [[ $condition == "n" || $condition == "N" ]]
 		then
 			while :
 			do
-				read -rp "Enter the path to the directory (or leave blank to exit) :: " path
+				read -rp "  Enter the path to the directory (or leave blank to exit) :: " path
 				if [[ -z $path ]]
 				then
-					echo -e "$WARNING	Exiting..."
+					echo -e "$WARNING Exiting..."
 					exit 0
 				elif cd "./$path"
 				then
-					echo -e "$INFO	Moved to the directory"
+					echo -e "$INFO Moved to the directory"
 					break
 				else
-					echo -e "$WARNING	Invalid path."
+					echo -e "$WARNING Invalid path."
 				fi
 			done
 			break
 		elif [[ $condition == "y" || $condition == "Y" ]]
 		then
-			echo Good job.
 			break
 		else
-			echo -e "$WARNING	Invalid input"
+			echo -e "$WARNING Invalid input"
 		fi
 	done
-	echo -e "$INFO	Proceeding..."
+	echo -e "$INFO Proceeding..."
 
-	echo "Select an option"
+	echo "  Select an option:"
 	local choice
 	while : ; do
 		echo "	[0] Exit.
@@ -56,7 +55,7 @@ cert_man(){
 		echo
 		read -rp "	Your input :: " choice
 		if [[ $choice = 0 ]] ; then
-			echo -e "$WARNING Exiting..."
+ 			echo -e "$WARNING Exiting..."
 			exit 0
 		elif [[ $choice = 1 ]] ; then
 			pkey_gen
@@ -71,7 +70,7 @@ cert_man(){
 		elif [[ $choice = 6 ]] ; then
 			cert_print
 		else
-			echo -e "$WARNING	Invalid input."
+			echo -e "$WARNING Invalid input."
 		fi
 	done
 }

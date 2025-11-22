@@ -26,7 +26,7 @@ INFO="${BLUE}[ INFO ]${RESET}"
 ERROR="${RED}[ ERROR ]${RESET}"
 WARNING="${YELLOW}[ WARNING ]${RESET}"
 echo "
-   _____          __          _________.__                _________ _________.____  
+   _____          __          _________.__                _________ _________.____
   /  _  \  __ ___/  |_  ____ /   _____/|__| ____   ____  /   _____//   _____/|    |
  /  /_\  \|  |  \   __\\/  _ \\______  \ |  |/ ___\ /    \ \\_____  \ \\_____  \\ |    |
 /    |    \  |  /|  | (  <_> )        \|  / /_/  >   |  \/        \/        \|    |___
@@ -43,25 +43,23 @@ You can do the following
 	[*] Generate keys;
 	[*] Generate certificate signing requests (CSRs);
 	[*] Sign on certificates;
-	[*] Verify certificates;
-	[*] Revoke certificates
-
-Let us get started, shall we?"
+	[*] Verify certificates; and
+	[*] Revoke certificates."
 
 echo -e "$INFO	This script needs OpenSSL to run. Checking that OpenSSL is installed..."
 
 # Check if OpenSSL is installed
 if ! command -v openssl &> /dev/null
 then
-	echo -e "${ERROR}	No OpenSSL, exiting..."
+	echo -e "${ERROR} No OpenSSL, exiting..."
 	exit $SSL_ERROR
 fi
 
-echo -e "${INFO}	DONE, it is indeed installed."
+echo -e "${INFO} DONE, it is indeed installed."
 
 while :
 do
-	
+
 	printf "\n--------------------------------------------------------------------------------\n\n"
 
 	echo "Select an option.
@@ -73,7 +71,7 @@ do
 	read -rp "	Your input :: " choice
 	if [[ $choice == "0" ]]
 	then
-		echo -e "$WARNING	Exiting..."
+		echo -e "$WARNING Exiting..."
 		exit 0
 	elif [[ $choice == "1" ]]
 	then
@@ -82,6 +80,6 @@ do
 	then
 		cert_man
 	else
-		echo -e "${ERROR}	Invalid input."		
+		echo -e "${ERROR} Invalid input."
 	fi
 done
